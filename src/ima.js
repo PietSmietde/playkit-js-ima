@@ -296,7 +296,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   playAdNow(adTagUrl: string): void {
-    this.logger.warn('playAdNow API is not implemented yet', adTagUrl);
+    this.config.adTagUrl = adTagUrl;
+    this.config.adsResponse = null;
+    if (this._adsManager) {
+      this._adsManager.destroy();
+      this._startAdsManager();
+      this._requestAds();
+    }
   }
 
   /**
