@@ -233,6 +233,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _selectedTextTrack: ?TextTrack;
   _selectedPlaybackRate: number;
   _textTracksHidden: Array<string>;
+  /**
+   * Weather to skip next ad request
+   * @member
+   * @private
+   * @memberof Ima
+   */
+  _skipNextAd: boolean;
 
   /**
    * Whether the ima plugin is valid.
@@ -303,6 +310,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._adsLoader.contentComplete();
       this._requestAds();
     }
+  }
+
+  /**
+   * Sets value to skip the next ad
+   * @public
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  skipNextAd(): void {
+    this._skipNextAd = true;
   }
 
   /**
@@ -734,7 +752,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _requestAds(): void {
-    if (this.config.adTagUrl || this.config.adsResponse) {
+    if (this._skipNextAd == true) {
+      this.logger.debug('Skipping ad');
+      this._skipNextAd = false;
+    } else if (this.config.adTagUrl || this.config.adsResponse) {
       this.logger.debug('Request ads');
       // Request video ads
       let adsRequest = new this._sdk.AdsRequest();
