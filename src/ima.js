@@ -84,7 +84,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     companions: {
       ads: null,
       sizeCriteria: 'SELECT_EXACT_MATCH'
-    }
+    },
+    adBreakPlayable: () => true
   };
 
   /**
@@ -314,9 +315,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   playAdNow(adPod: PKAdPod): void {
-    if (Array.isArray(adPod) && !(this.isAdPlaying() || this._playAdByConfig())) {
+    if (Array.isArray(adPod) && !(this.isAdPlaying() || this._playAdByConfig() || !this._adBreakPlayableByConfig(adPod))) {
       this._playAdBreak(adPod);
     }
+  }
+
+  _adBreakPlayableByConfig(adPod: PKAdPod): boolean {
+    return this.config.adBreakPlayable(adPod);
   }
 
   _playAdBreak(adPod: PKAdPod): void {
